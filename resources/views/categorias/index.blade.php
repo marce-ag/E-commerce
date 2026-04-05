@@ -1,13 +1,13 @@
 @extends('layouts.app')
-@section('title', 'Usuarios')
+@section('title', 'Categorías')
 @section('content')
-<div class="bg-white shadow-sm sm:rounded-lg p-6">
+<div class="bg-white shadow-sm sm:rounded-lg p-6 mb-4">
     <div class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-bold text-gray-800">Gestión de Usuarios</h2>
-        @can('create', App\Models\Usuario::class)
-            <a href="{{ route('usuarios.create') }}"
+        <h2 class="text-2xl font-bold text-gray-800">Categorías</h2>
+        @can('create', App\Models\Categoria::class)
+            <a href="{{ route('categorias.create') }}"
                class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
-                + Nuevo usuario
+                + Nueva categoría
             </a>
         @endcan
     </div>
@@ -22,34 +22,28 @@
         <thead>
             <tr class="bg-gray-50">
                 <th class="p-3 text-left border-b">Nombre</th>
-                <th class="p-3 text-left border-b">Apellidos</th>
-                <th class="p-3 text-left border-b">Correo</th>
-                <th class="p-3 text-left border-b">Rol</th>
+                <th class="p-3 text-left border-b">Descripción</th>
+                <th class="p-3 text-left border-b">Productos</th>
                 <th class="p-3 text-left border-b">Acciones</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($usuarios as $usuario)
+            @foreach($categorias as $categoria)
             <tr class="border-b hover:bg-gray-50">
-                <td class="p-3">{{ $usuario->nombre }}</td>
-                <td class="p-3">{{ $usuario->apellidos }}</td>
-                <td class="p-3">{{ $usuario->correo }}</td>
+                <td class="p-3">{{ $categoria->nombre }}</td>
+                <td class="p-3">{{ $categoria->descripcion ?? '—' }}</td>
+                <td class="p-3">{{ $categoria->productos_count }}</td>
                 <td class="p-3">
-                    <span class="bg-indigo-100 text-indigo-700 text-xs px-2 py-1 rounded-full">
-                        {{ ucfirst($usuario->rol) }}
-                    </span>
-                </td>
-                <td class="p-3 flex gap-2">
-                    @can('update', $usuario)
-                        <a href="{{ route('usuarios.edit', $usuario) }}"
+                    @can('update', $categoria)
+                        <a href="{{ route('categorias.edit', $categoria) }}"
                            class="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600">
                             Editar
                         </a>
                     @endcan
-                    @can('delete', $usuario)
-                        <form action="{{ route('usuarios.destroy', $usuario) }}"
+                    @can('delete', $categoria)
+                        <form action="{{ route('categorias.destroy', $categoria) }}"
                               method="POST" class="inline"
-                              onsubmit="return confirm('¿Eliminar este usuario?')">
+                              onsubmit="return confirm('¿Eliminar esta categoría?')">
                             @csrf @method('DELETE')
                             <button class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
                                 Eliminar

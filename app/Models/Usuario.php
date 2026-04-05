@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class Usuario extends Authenticatable
 {
+    use HasFactory, Notifiable;
     use Notifiable;
 
     protected $table = 'usuarios';
@@ -55,7 +57,6 @@ class Usuario extends Authenticatable
 
 
 
-<<<<<<< HEAD
     // Usuario tiene muchos productos (como vendedor)
     public function productos()
     {
@@ -96,6 +97,4 @@ class Usuario extends Authenticatable
 
 
 
-=======
->>>>>>> 1b36d443633a320fb0f7a86bc2d505e5f12769cf
 }

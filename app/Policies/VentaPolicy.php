@@ -7,23 +7,24 @@ use App\Models\Usuario;
 
 class VentaPolicy
 {
-    // Ver listado — administrador y gerente
+    // Ver listado
     public function viewAny(Usuario $usuario): bool
     {
-        return in_array($usuario->rol, ['administrador', 'gerente']);
+        // Cliente solo ve sus propias ventas, gerente y admin ven todas
+        return true;
     }
 
-    // Ver una — administrador, gerente o el cliente dueño
+    // Ver una
     public function view(Usuario $usuario, Venta $venta): bool
     {
         if ($usuario->esAdministrador() || $usuario->esGerente()) return true;
         return $venta->cliente_id === $usuario->id;
     }
 
-    // Crear — cliente y gerente pueden comprar
+    // Crear — todos los roles pueden comprar
     public function create(Usuario $usuario): bool
     {
-        return in_array($usuario->rol, ['cliente', 'gerente']);
+        return in_array($usuario->rol, ['cliente', 'gerente', 'administrador']);
     }
 
     // Editar — solo administrador

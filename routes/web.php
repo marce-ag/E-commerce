@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\VentaController;
+
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
@@ -27,6 +31,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/administrador', [DashboardController::class, 'administrador'])
         ->name('admin.dashboard');
 
-    // CRUD usuarios (solo administrador)
+    // CRUD usuarios
     Route::resource('usuarios', UserController::class);
+
+    // CRUD productos, categorias, ventas
+    Route::resource('productos',  ProductoController::class);
+    Route::resource('categorias', CategoriaController::class);
+    Route::resource('ventas',     VentaController::class);
 });

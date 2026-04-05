@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Editar Usuario')
 @section('content')
-<div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-8 max-w-lg mx-auto">
+<div class="bg-white shadow-sm sm:rounded-lg p-8 max-w-lg mx-auto">
     <h2 class="text-2xl font-bold text-gray-800 mb-6">Editar Usuario</h2>
 
     @if($errors->any())
@@ -15,25 +15,32 @@
     @endif
 
     <form method="POST" action="{{ route('usuarios.update', $usuario) }}">
-        @csrf
-        @method('PUT')
+        @csrf @method('PUT')
         <div class="mb-4">
             <label class="block text-gray-700 font-medium mb-1">Nombre</label>
-            <input type="text" name="name" value="{{ old('name', $usuario->name) }}" required
-                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+            <input type="text" name="nombre"
+                   value="{{ old('nombre', $usuario->nombre) }}" required
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-400">
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-medium mb-1">Apellidos</label>
+            <input type="text" name="apellidos"
+                   value="{{ old('apellidos', $usuario->apellidos) }}" required
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-400">
         </div>
         <div class="mb-4">
             <label class="block text-gray-700 font-medium mb-1">Correo</label>
-            <input type="email" name="email" value="{{ old('email', $usuario->email) }}" required
-                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+            <input type="email" name="correo"
+                   value="{{ old('correo', $usuario->correo) }}" required
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-400">
         </div>
         <div class="mb-6">
             <label class="block text-gray-700 font-medium mb-1">Rol</label>
-            <select name="role" required
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                <option value="cliente"  {{ old('role', $usuario->role)=='cliente'  ? 'selected' : '' }}>Cliente</option>
-                <option value="empleado" {{ old('role', $usuario->role)=='empleado' ? 'selected' : '' }}>Empleado</option>
-                <option value="gerente"  {{ old('role', $usuario->role)=='gerente'  ? 'selected' : '' }}>Gerente</option>
+            <select name="rol" required
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-400">
+                <option value="administrador" {{ old('rol', $usuario->rol)=='administrador' ? 'selected' : '' }}>Administrador</option>
+                <option value="gerente"       {{ old('rol', $usuario->rol)=='gerente'       ? 'selected' : '' }}>Gerente</option>
+                <option value="cliente"       {{ old('rol', $usuario->rol)=='cliente'       ? 'selected' : '' }}>Cliente</option>
             </select>
         </div>
         <div class="flex gap-3">
