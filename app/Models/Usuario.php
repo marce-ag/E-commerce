@@ -94,6 +94,18 @@ class Usuario extends Authenticatable
 
 
 
+    // Total de vendedores (usuarios con rol gerente)
+    public static function totalVendedores()
+    {
+        return static::where('rol', 'gerente')->count();
+    }
+
+    // Total de compradores (usuarios con rol cliente)
+    public static function totalCompradores()
+    {
+        return static::where('rol', 'cliente')->count();
+    }
+
 
 
 

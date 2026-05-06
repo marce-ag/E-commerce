@@ -19,7 +19,10 @@ class UsuarioSeeder extends Seeder
             'rol'       => 'administrador',
         ]);
 
-        // 5 usuarios aleatorios con el factory
-        Usuario::factory(5)->create();
+        // 30 gerentes (vendedores)
+        Usuario::factory(30)->gerente()->create();
+
+        // 70 clientes (compradores)
+        Usuario::factory(70)->cliente()->create();
     }
 }

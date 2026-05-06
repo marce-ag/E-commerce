@@ -18,6 +18,7 @@ class StoreVentaRequest extends FormRequest
             'cantidad'    => 'required|integer|min:1',
             'fecha'       => 'required|date',
             'total'       => 'required|numeric|min:0.01',
+            'ticket'      => 'nullable|image|max:2048',
         ];
     }
 

@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateProductoRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ProductoController extends Controller
 {
@@ -30,12 +31,21 @@ class ProductoController extends Controller
 
     public function store(StoreProductoRequest $request)
     {
+        $fotos = [];
+        if ($request->hasFile('fotos')) {
+            foreach ($request->file('fotos') as $foto) {
+                $path = $foto->store('productos', 'public');
+                $fotos[] = $path;
+            }
+        }
+
         $producto = Producto::create([
             'nombre'      => $request->nombre,
             'descripcion' => $request->descripcion,
             'precio'      => $request->precio,
             'existencia'  => $request->existencia,
             'usuario_id'  => Auth::user()->id,
+            'fotos'       => $fotos,
         ]);
 
         if ($request->has('categorias')) {
@@ -45,7 +55,7 @@ class ProductoController extends Controller
         Log::channel('productos')->info('Producto creado', [
             'producto_id' => $producto->id,
             'nombre'      => $producto->nombre,
-            'usuario_id'  => Auth::id(),
+            'usuario_id'  => Auth::user()->id,
         ]);
 
         return redirect()->route('productos.index')
@@ -61,7 +71,27 @@ class ProductoController extends Controller
 
     public function update(UpdateProductoRequest $request, Producto $producto)
     {
-        $producto->update($request->only('nombre', 'descripcion', 'precio', 'existencia'));
+        $fotos = $producto->fotos ?? [];
+
+        if ($request->hasFile('fotos')) {
+            // Elimina fotos anteriores del disco público
+            foreach ($fotos as $fotoVieja) {
+                Storage::disk('public')->delete($fotoVieja);
+            }
+            $fotos = [];
+            foreach ($request->file('fotos') as $foto) {
+                $path = $foto->store('productos', 'public');
+                $fotos[] = $path;
+            }
+        }
+
+        $producto->update([
+            'nombre'      => $request->nombre,
+            'descripcion' => $request->descripcion,
+            'precio'      => $request->precio,
+            'existencia'  => $request->existencia,
+            'fotos'       => $fotos,
+        ]);
 
         if ($request->has('categorias')) {
             $producto->categorias()->sync($request->categorias);

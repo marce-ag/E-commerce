@@ -9,11 +9,16 @@ class Producto extends Model
     protected $table = 'productos';
 
     protected $fillable = [
-        'nombre',
-        'descripcion',
-        'precio',
-        'existencia',
-        'usuario_id',
+    'nombre',
+    'descripcion',
+    'precio',
+    'existencia',
+    'usuario_id',
+    'fotos',
+    ];
+
+    protected $casts = [
+        'fotos' => 'array',
     ];
 
     // Producto pertenece a un usuario (vendedor)

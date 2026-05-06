@@ -20,6 +20,12 @@ Route::get('/login',  [LoginController::class, 'showLogin'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout',[LoginController::class, 'logout'])->name('logout');
 
+
+// ── 2FA ───────────────────────────────────────────────────
+Route::get('/2fa',  [LoginController::class, 'show2fa'])->name('2fa.show');
+Route::post('/2fa', [LoginController::class, 'verify2fa'])->name('2fa.verify');
+
+
 // ── Rutas protegidas ───────────────────────────────────────
 Route::middleware('auth')->group(function () {
 
@@ -30,6 +36,11 @@ Route::middleware('auth')->group(function () {
         ->name('gerente.dashboard');
     Route::get('/dashboard/administrador', [DashboardController::class, 'administrador'])
         ->name('admin.dashboard');
+    Route::get('/ventas/{venta}/ticket', [VentaController::class, 'ticket'])
+        ->name('ventas.ticket');
+
+    Route::patch('/ventas/{venta}/validar', [VentaController::class, 'validar'])
+        ->name('ventas.validar');
 
     // CRUD usuarios
     Route::resource('usuarios', UserController::class);

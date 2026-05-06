@@ -14,7 +14,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('productos.store') }}">
+    <form method="POST" action="{{ route('productos.store') }}" enctype="multipart/form-data">
         @csrf
         <div class="mb-4">
             <label class="block text-gray-700 font-medium mb-1">Nombre</label>
@@ -51,6 +51,18 @@
                 @endforeach
             </div>
         </div>
+
+
+        <div class="mb-6">
+            <label class="block text-gray-700 font-medium mb-1">
+                Fotos del producto (máximo 5)
+            </label>
+            <input type="file" name="fotos[]" multiple accept="image/*"
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2">
+            <p class="text-gray-400 text-xs mt-1">Formatos: JPG, PNG, GIF. Máximo 2MB por imagen.</p>
+        </div>
+
+
         <div class="flex gap-3">
             <button type="submit"
                     class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700">

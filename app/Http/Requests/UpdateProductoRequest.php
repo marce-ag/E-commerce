@@ -15,12 +15,13 @@ class UpdateProductoRequest extends FormRequest
     public function rules(): array
     {
         $productoId = $this->route('producto')->id;
-
         return [
             'nombre'      => 'required|string|max:255|unique:productos,nombre,' . $productoId,
             'descripcion' => 'nullable|string|max:1000',
             'precio'      => 'required|numeric|min:0.01',
             'existencia'  => 'required|integer|min:0',
+            'fotos'       => 'nullable|array|max:5',
+            'fotos.*'     => 'image|max:2048',
         ];
     }
 

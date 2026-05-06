@@ -14,7 +14,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('ventas.store') }}" id="form-compra">
+    <form method="POST" action="{{ route('ventas.store') }}" id="form-compra" enctype="multipart/form-data">
         @csrf
 
         {{-- Producto --}}
@@ -57,6 +57,16 @@
             </div>
             <input type="hidden" name="total" id="total" value="0">
         </div>
+
+        <div class="mb-6">
+            <label class="block text-gray-700 font-medium mb-1">
+                Comprobante de pago (opcional)
+            </label>
+            <input type="file" name="ticket" accept="image/*"
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2">
+            <p class="text-gray-400 text-xs mt-1">Sube una imagen de tu comprobante. Se guardará de forma privada.</p>
+        </div>
+
 
         <div class="flex gap-3">
             <button type="submit"

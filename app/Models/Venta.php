@@ -9,11 +9,17 @@ class Venta extends Model
     protected $table = 'ventas';
 
     protected $fillable = [
-        'producto_id',
-        'vendedor_id',
-        'cliente_id',
-        'fecha',
-        'total',
+    'producto_id',
+    'vendedor_id',
+    'cliente_id',
+    'fecha',
+    'total',
+    'ticket',
+    'validada',
+    ];
+
+    protected $casts = [
+        'validada' => 'boolean',
     ];
 
     // Venta pertenece a un producto
@@ -33,4 +39,28 @@ class Venta extends Model
     {
         return $this->belongsTo(Usuario::class, 'vendedor_id');
     }
+
+
+    // Producto más vendido
+    public static function productoMasVendido()
+    {
+        return static::selectRaw('producto_id, count(*) as total_ventas')
+            ->groupBy('producto_id')
+            ->orderByDesc('total_ventas')
+            ->with('producto')
+            ->first();
+    }
+
+    // Comprador más frecuente
+    public static function compradorMasFrecuente()
+    {
+        return static::selectRaw('cliente_id, count(*) as total_compras')
+            ->groupBy('cliente_id')
+            ->orderByDesc('total_compras')
+            ->with('cliente')
+            ->first();
+    }
+
+
+
 }

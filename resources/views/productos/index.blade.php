@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Facades\Storage; @endphp
 @extends('layouts.app')
 @section('title', 'Productos')
 @section('content')
@@ -22,8 +23,18 @@
         <div class="bg-white shadow-sm sm:rounded-lg overflow-hidden hover:shadow-md transition">
             
             {{-- Encabezado de la tarjeta --}}
-            <div class="bg-indigo-600 px-5 py-4">
-                <h3 class="text-white font-bold text-lg">{{ $producto->nombre }}</h3>
+            {{-- Foto del producto --}}
+            @if($producto->fotos && count($producto->fotos) > 0)
+                <img src="{{ Storage::url($producto->fotos[0]) }}"
+                     class="w-full h-48 object-cover">
+            @else
+                <div class="bg-indigo-600 h-48 flex items-center justify-center">
+                    <span class="text-white text-5xl">📦</span>
+                </div>
+            @endif
+            {{-- Encabezado de la tarjeta --}}
+            <div class="px-5 py-3 border-b">
+                <h3 class="font-bold text-lg text-gray-800">{{ $producto->nombre }}</h3>
             </div>
 
             {{-- Cuerpo de la tarjeta --}}

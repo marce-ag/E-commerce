@@ -5,10 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Venta;
 use App\Models\Producto;
 use App\Http\Requests\StoreVentaRequest;
+use App\Mail\VentaValidadaVendedorMail;
+use App\Mail\VentaValidadaCompradorMail;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Gate;
+
 
 class VentaController extends Controller
 {
@@ -49,11 +54,17 @@ class VentaController extends Controller
     {
         $producto = \App\Models\Producto::findOrFail($request->producto_id);
 
-        // Verificar que haya suficiente existencia
         if ($producto->existencia < $request->cantidad) {
             return back()->withErrors([
                 'cantidad' => 'No hay suficiente existencia. Solo quedan ' . $producto->existencia . ' unidades.'
             ])->withInput();
+        }
+
+        // Guardar ticket en disco privado
+        $ticketPath = null;
+        if ($request->hasFile('ticket')) {
+            $ticketPath = $request->file('ticket')
+                ->store('tickets', 'private');
         }
 
         $venta = Venta::create([
@@ -62,15 +73,15 @@ class VentaController extends Controller
             'cliente_id'  => Auth::user()->id,
             'fecha'       => $request->fecha,
             'total'       => $request->total,
+            'ticket'      => $ticketPath,
+            'validada'    => false,
         ]);
 
-        // Descontar existencia
         $producto->decrement('existencia', $request->cantidad);
 
         Log::channel('ventas')->info('Venta creada', [
             'venta_id'    => $venta->id,
             'producto_id' => $venta->producto_id,
-            'cantidad'    => $request->cantidad,
             'total'       => $venta->total,
             'usuario_id'  => Auth::user()->id,
         ]);
@@ -86,4 +97,67 @@ class VentaController extends Controller
         return redirect()->route('ventas.index')
             ->with('success', 'Venta eliminada.');
     }
+
+
+    public function ticket(Venta $venta)
+    {
+        // Solo el dueño de la venta o un gerente puede ver el ticket
+        if (Auth::user()->id !== $venta->cliente_id && !Auth::user()->esGerente() && !Auth::user()->esAdministrador()) {
+            abort(403);
+        }
+
+        if (!$venta->ticket || !Storage::disk('private')->exists($venta->ticket)) {
+            abort(404, 'Ticket no encontrado.');
+        }
+
+        return response()->file(
+            Storage::disk('private')->path($venta->ticket)
+        );
+    }
+
+
+    public function validar(Venta $venta)
+    {
+        if (!Auth::user()->esGerente() && !Auth::user()->esAdministrador()) {
+            abort(403);
+        }
+
+        $venta->load('producto', 'vendedor', 'cliente');
+        $venta->update(['validada' => true]);
+
+        // Enviamos solo al vendedor primero
+        try {
+            Mail::to($venta->vendedor->correo)
+                ->send(new VentaValidadaVendedorMail($venta));
+        } catch (\Exception $e) {
+            Log::channel('ventas')->warning('Error enviando correo al vendedor', [
+                'error' => $e->getMessage()
+            ]);
+        }
+
+        // Esperamos y enviamos al comprador
+        sleep(5);
+
+        try {
+            Mail::to($venta->cliente->correo)
+                ->send(new VentaValidadaCompradorMail($venta));
+        } catch (\Exception $e) {
+            Log::channel('ventas')->warning('Error enviando correo al comprador', [
+                'error' => $e->getMessage()
+            ]);
+        }
+
+        Log::channel('ventas')->info('Venta validada — correos enviados', [
+            'venta_id'         => $venta->id,
+            'vendedor_correo'  => $venta->vendedor->correo,
+            'comprador_correo' => $venta->cliente->correo,
+            'validado_por'     => Auth::user()->id,
+        ]);
+
+        return redirect()->route('ventas.index')
+            ->with('success', 'Venta validada y correos enviados correctamente.');
+    }
+
+
+
 }

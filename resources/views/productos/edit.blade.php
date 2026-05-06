@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Facades\Storage; @endphp
 @extends('layouts.app')
 @section('title', 'Editar Producto')
 @section('content')
@@ -14,7 +15,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('productos.update', $producto) }}">
+    <form method="POST" action="{{ route('productos.update', $producto) }}" enctype="multipart/form-data">
         @csrf @method('PUT')
         <div class="mb-4">
             <label class="block text-gray-700 font-medium mb-1">Nombre</label>
@@ -51,6 +52,33 @@
                 @endforeach
             </div>
         </div>
+
+
+        {{-- Fotos actuales --}}
+        @if($producto->fotos && count($producto->fotos) > 0)
+        <div class="mb-4">
+            <label class="block text-gray-700 font-medium mb-2">Fotos actuales</label>
+            <div class="flex gap-2 flex-wrap">
+                @foreach($producto->fotos as $foto)
+                    <img src="{{ Storage::url($foto) }}"
+                         class="w-24 h-24 object-cover rounded-lg border">
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        {{-- Nuevas fotos --}}
+        <div class="mb-6">
+            <label class="block text-gray-700 font-medium mb-1">
+                Cambiar fotos (máximo 5)
+            </label>
+            <input type="file" name="fotos[]" multiple accept="image/*"
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2">
+            <p class="text-gray-400 text-xs mt-1">Si subes nuevas fotos, se reemplazarán las anteriores.</p>
+        </div>
+
+
+
         <div class="flex gap-3">
             <button type="submit"
                     class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700">
